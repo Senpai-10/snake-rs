@@ -21,7 +21,7 @@ use std::collections::LinkedList;
 fn main() {
     let opengl = OpenGL::V3_2;
 
-    let mut window: GlutinWindow = WindowSettings::new("Snake Game", [400, 600])
+    let mut window: GlutinWindow = WindowSettings::new("Snake Game", [512; 2])
         .exit_on_esc(true)
         .build()
         .unwrap();
@@ -34,7 +34,7 @@ fn main() {
         },
     };
 
-    let mut events = Events::new(EventSettings::new()).ups(8);
+    let mut events = Events::new(EventSettings::new()).ups(16);
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.render_args() {
             game.render(&args);
