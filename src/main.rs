@@ -125,6 +125,11 @@ fn main() {
 
         if let Some(key) = e.button_args() {
             if key.state == ButtonState::Press {
+                // quit game if q key is pressed
+                if key.button == Button::Keyboard(Key::Q) {
+                    return;
+                }
+
                 game.pressed(&key.button);
             }
         }
