@@ -1,9 +1,12 @@
+use crate::help::display_help_box;
 use ncurses::*;
 
 pub struct Game {
     window: WINDOW,
     min: WindowSize,
     max: WindowSize,
+    screen_x_max: i32,
+    screen_y_max: i32,
     score: u32,
     quit: bool,
 }
@@ -14,11 +17,13 @@ struct WindowSize {
 }
 
 impl Game {
-    pub fn init(game_window: WINDOW) -> Game {
+    pub fn init(game_window: WINDOW, screen_x_max: i32, screen_y_max: i32) -> Game {
         Game {
             window: game_window,
             min: WindowSize { x: 0, y: 0 },
             max: WindowSize { x: 0, y: 0 },
+            screen_x_max: screen_x_max,
+            screen_y_max: screen_y_max,
             score: 0,
             quit: false,
         }
@@ -29,16 +34,20 @@ impl Game {
 
         // main loop
         while !self.quit {
+            display_help_box(self.screen_x_max, self.screen_y_max);
+            box_(self.window, 0, 0); // draw the game window border
+
             self.display_score();
-            wmove(self.window, self.min.y, self.min.x);
-            waddstr(self.window, "hi");
             self.handle_input();
+            refresh();
         }
     }
 
     fn display_score(&self) {
-        wmove(self.window, 0, 0);
-        waddstr(self.window, &format!("score: {} ", self.score));
+        let score = &format!("score: {} ", self.score);
+
+        wmove(self.window, 0, (self.max.x - score.len() as i32) / 2);
+        waddstr(self.window, score);
     }
 
     fn handle_input(&mut self) {

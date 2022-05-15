@@ -1,6 +1,7 @@
 extern crate ncurses;
 
 mod game;
+mod help;
 
 use game::Game;
 use ncurses::*;
@@ -17,10 +18,8 @@ fn main() {
     getmaxyx(stdscr(), &mut y_max, &mut x_max);
 
     let game_window = newwin(y_max / 2, x_max / 2, y_max / 4, x_max / 4);
-    box_(game_window, 0, 0);
 
-    let mut game = Game::init(game_window);
+    let mut game = Game::init(game_window, x_max, y_max);
     game.start();
-
     endwin();
 }
