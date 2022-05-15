@@ -9,13 +9,14 @@ pub struct Game {
     screen_x_max: i32,
     screen_y_max: i32,
     snake: Snake,
+    direction: Direction,
     score: u32,
     quit: bool,
 }
 
-struct WindowSize {
-    x: i32,
-    y: i32,
+pub struct WindowSize {
+    pub x: i32,
+    pub y: i32,
 }
 
 impl Game {
@@ -27,6 +28,7 @@ impl Game {
             screen_x_max: screen_x_max,
             screen_y_max: screen_y_max,
             snake: Snake::new(game_window),
+            direction: Direction::RIGHT,
             score: 0,
             quit: false,
         }
@@ -37,9 +39,11 @@ impl Game {
 
         // main loop
         while !self.quit {
-            timeout((150 - (self.snake.body.len()) / 5 + self.snake.body.len() / 10 & 120) as i32);
+            std::thread::sleep_ms(100);
             display_help_box(self.screen_x_max, self.screen_y_max);
             box_(self.window, 0, 0); // draw the game window border
+            self.snake
+                .move_head(self.direction, self.direction, &self.min, &self.max);
 
             self.handle_input();
             self.snake.render();
@@ -57,34 +61,29 @@ impl Game {
     }
 
     fn handle_input(&mut self) {
-        let x = self.snake.body[0].1;
-        let y = self.snake.body[0].0;
-
         match wgetch(self.window) as u8 as char {
             'w' => {
-                if y != self.min.y {
-                    self.snake.move_head(Direction::UP)
-                }
+                self.snake
+                    .move_head(Direction::UP, self.direction, &self.min, &self.max);
+                self.direction = Direction::UP;
             }
             's' => {
-                if y != self.max.y {
-                    self.snake.move_head(Direction::DOWN)
-                }
+                self.snake
+                    .move_head(Direction::DOWN, self.direction, &self.min, &self.max);
+                self.direction = Direction::DOWN;
             }
             'd' => {
-                if x != self.max.x {
-                    self.snake.move_head(Direction::RIGHT)
-                }
+                self.snake
+                    .move_head(Direction::RIGHT, self.direction, &self.min, &self.max);
+                self.direction = Direction::RIGHT;
             }
             'a' => {
-                if x != self.min.x {
-                    self.snake.move_head(Direction::LEFT)
-                }
+                self.snake
+                    .move_head(Direction::LEFT, self.direction, &self.min, &self.max);
+                self.direction = Direction::LEFT;
             }
             'q' => self.quit = true,
-            _ => {
-                // self.snake.move_head(Direction::RIGHT);
-            }
+            _ => {}
         }
     }
 
