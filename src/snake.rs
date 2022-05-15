@@ -42,24 +42,32 @@ impl Snake {
 
         match direction {
             Direction::UP => {
-                if y != min.y {
-                    y -= 1
+                if y == min.y {
+                    return;
                 }
+
+                y -= 1
             }
             Direction::DOWN => {
-                if y != max.y {
-                    y += 1
+                if y == max.y {
+                    return;
                 }
+
+                y += 1
             }
             Direction::RIGHT => {
-                if x != max.x {
-                    x += 1
+                if x == max.x {
+                    return;
                 }
+
+                x += 1
             }
             Direction::LEFT => {
-                if x != min.x {
-                    x -= 1
+                if x == min.x {
+                    return;
                 }
+
+                x -= 1
             }
         }
 

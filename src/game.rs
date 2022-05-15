@@ -95,7 +95,7 @@ impl Game {
 
         // subtract 1 from max x, y
         // Because the max value is on the border line
-        self.max.x = self.max.x - 1;
-        self.max.y = self.max.y - 1;
+        self.max.x = self.max.x - 2;
+        self.max.y = self.max.y - 2;
     }
 }
