@@ -25,13 +25,10 @@ fn main() {
         window.y_max / 4,
         window.x_max / 4,
     );
-
     box_(game_window, 0, 0);
 
-    wmove(game_window, 0, 0);
-    waddstr(game_window, "score: 0 ");
+    let mut game = Game::init(game_window);
+    game.start();
 
-    wrefresh(game_window);
-    wgetch(game_window);
     endwin();
 }
