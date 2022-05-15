@@ -2,6 +2,7 @@ extern crate ncurses;
 
 mod game;
 mod help;
+mod insert_new_head;
 mod snake;
 
 use game::Game;
