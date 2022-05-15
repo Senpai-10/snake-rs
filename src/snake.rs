@@ -40,35 +40,21 @@ impl Snake {
         let mut x = self.body[0].1;
         let mut y = self.body[0].0;
 
+        if y == min.y {
+            return;
+        } else if y == max.y {
+            return;
+        } else if x == max.x {
+            return;
+        } else if x == min.x {
+            return;
+        }
+
         match direction {
-            Direction::UP => {
-                if y == min.y {
-                    return;
-                }
-
-                y -= 1
-            }
-            Direction::DOWN => {
-                if y == max.y {
-                    return;
-                }
-
-                y += 1
-            }
-            Direction::RIGHT => {
-                if x == max.x {
-                    return;
-                }
-
-                x += 1
-            }
-            Direction::LEFT => {
-                if x == min.x {
-                    return;
-                }
-
-                x -= 1
-            }
+            Direction::UP => y -= 1,
+            Direction::DOWN => y += 1,
+            Direction::RIGHT => x += 1,
+            Direction::LEFT => x -= 1,
         }
 
         self.body = insert_new_head(&mut self.body, (y, x));
