@@ -1,4 +1,4 @@
-use ncurses::{ll::getmaxy, *};
+use ncurses::*;
 
 pub struct Game {
     window: WINDOW,
