@@ -1,3 +1,4 @@
+use crate::colors::*;
 use crate::game::WindowSize;
 use crate::insert_new_head::insert_new_head;
 use ncurses::*;
@@ -24,9 +25,17 @@ impl Snake {
     }
 
     pub fn render(&self) {
-        for part in self.body.iter() {
+        for (index, part) in self.body.iter().enumerate() {
             wmove(self.window, part.0, part.1);
-            waddch(self.window, '#' as u32);
+            if index == 0 {
+                wattron(self.window, COLOR_PAIR(SNAKE_HEAD));
+                waddch(self.window, '*' as u32);
+                wattr_off(self.window, COLOR_PAIR(SNAKE_HEAD));
+            } else {
+                wattron(self.window, COLOR_PAIR(SNAKE_BODY));
+                waddch(self.window, '#' as u32);
+                wattr_off(self.window, COLOR_PAIR(SNAKE_BODY));
+            }
         }
     }
 
