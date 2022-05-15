@@ -1,3 +1,5 @@
+use crate::game::WindowSize;
+use crate::insert_new_head::insert_new_head;
 use ncurses::*;
 
 pub struct Snake {
@@ -5,6 +7,7 @@ pub struct Snake {
     window: WINDOW,
 }
 
+#[derive(Copy, Clone, PartialEq)]
 pub enum Direction {
     UP,
     DOWN,
@@ -27,30 +30,39 @@ impl Snake {
         }
     }
 
-    pub fn move_head(&mut self, direction: Direction) {
+    pub fn move_head(
+        &mut self,
+        direction: Direction,
+        current_direction: Direction,
+        min: &WindowSize,
+        max: &WindowSize,
+    ) {
         let mut x = self.body[0].1;
         let mut y = self.body[0].0;
 
         match direction {
-            Direction::UP => y -= 1,
-            Direction::DOWN => y += 1,
-            Direction::RIGHT => x += 1,
-            Direction::LEFT => x -= 1,
+            Direction::UP => {
+                if y != min.y {
+                    y -= 1
+                }
+            }
+            Direction::DOWN => {
+                if y != max.y {
+                    y += 1
+                }
+            }
+            Direction::RIGHT => {
+                if x != max.x {
+                    x += 1
+                }
+            }
+            Direction::LEFT => {
+                if x != min.x {
+                    x -= 1
+                }
+            }
         }
 
-        let mut new_body: Vec<(i32, i32)> = Vec::new();
-
-        new_body.push((y, x));
-
-        let mut old_body = self.body.clone();
-
-        new_body.append(&mut old_body);
-
-        self.body = new_body;
-
-        // self.body.append(&mut [(self.body[0].0, self.body[0].1)]);
+        self.body = insert_new_head(&mut self.body, (y, x));
     }
-    // pub fn get_snake_head(&self) -> (i32, i32) {
-    //     return (self.body[0].0, self.body[0].1);
-    // }
 }
