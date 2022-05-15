@@ -1,58 +1,37 @@
-extern crate glutin_window;
-extern crate graphics;
-extern crate opengl_graphics;
-extern crate piston;
+extern crate ncurses;
 
-mod colors;
 mod game;
-mod snake;
 
 use game::Game;
-use glutin_window::GlutinWindow;
-use opengl_graphics::{GlGraphics, OpenGL};
-use piston::event_loop::*;
-use piston::input::*;
-use piston::window::WindowSettings;
-use piston::Events;
-use snake::{Direction, Snake};
+use ncurses::*;
 
-use std::collections::LinkedList;
+struct Window {
+    y_max: i32,
+    x_max: i32,
+}
 
 fn main() {
-    let opengl = OpenGL::V3_2;
+    initscr();
+    noecho();
+    cbreak();
+    curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
 
-    let mut window: GlutinWindow = WindowSettings::new("Snake Game", [512; 2])
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
+    let mut window = Window { x_max: 0, y_max: 0 };
+    getmaxyx(stdscr(), &mut window.y_max, &mut window.x_max);
 
-    let mut game = Game {
-        gl: GlGraphics::new(opengl),
-        snake: Snake {
-            body: LinkedList::from_iter((vec![(0, 0), (0, 1)]).into_iter()),
-            dir: Direction::RIGHT,
-        },
-    };
+    let game_window = newwin(
+        window.y_max / 2,
+        window.x_max / 2,
+        window.y_max / 4,
+        window.x_max / 4,
+    );
 
-    let mut events = Events::new(EventSettings::new()).ups(16);
-    while let Some(e) = events.next(&mut window) {
-        if let Some(args) = e.render_args() {
-            game.render(&args);
-        }
+    box_(game_window, 0, 0);
 
-        if let Some(_) = e.update_args() {
-            game.update();
-        }
+    wmove(game_window, 0, 0);
+    waddstr(game_window, "score: 0 ");
 
-        if let Some(key) = e.button_args() {
-            if key.state == ButtonState::Press {
-                // quit game if q key is pressed
-                if key.button == Button::Keyboard(Key::Q) {
-                    return;
-                }
-
-                game.pressed(&key.button);
-            }
-        }
-    }
+    wrefresh(game_window);
+    wgetch(game_window);
+    endwin();
 }
