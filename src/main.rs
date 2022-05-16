@@ -1,6 +1,7 @@
 extern crate ncurses;
 
 mod colors;
+mod constants;
 mod food;
 mod game;
 mod help;

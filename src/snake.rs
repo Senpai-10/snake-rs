@@ -1,4 +1,5 @@
 use crate::colors::*;
+use crate::constants::{SNAKE_BODY_CHAR, SNAKE_HEAD_CHAR};
 use crate::game::WindowSize;
 use ncurses::*;
 
@@ -28,10 +29,10 @@ impl Snake {
             wmove(self.window, part.0, part.1);
             if index == 0 {
                 wattron(self.window, COLOR_PAIR(SNAKE_HEAD));
-                waddch(self.window, '#' as u32);
+                waddch(self.window, SNAKE_HEAD_CHAR as u32);
                 wattr_off(self.window, COLOR_PAIR(SNAKE_HEAD));
             } else {
-                waddch(self.window, '#' as u32);
+                waddch(self.window, SNAKE_BODY_CHAR as u32);
             }
         }
     }

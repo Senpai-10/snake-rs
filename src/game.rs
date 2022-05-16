@@ -1,3 +1,4 @@
+use crate::constants::SNAKE_HEAD_CHAR;
 use crate::food::Food;
 use crate::help::display_help_box;
 use crate::snake::{Direction, Snake};
@@ -50,7 +51,7 @@ impl Game {
             if self.snake.get_head() == food.coordinates {
                 self.score += 1;
                 wmove(self.window, food.coordinates.0, food.coordinates.1);
-                waddch(self.window, '#' as u32);
+                waddch(self.window, SNAKE_HEAD_CHAR as u32);
 
                 food.generate();
             } else {
