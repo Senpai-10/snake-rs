@@ -1,50 +1,88 @@
 use crate::colors::*;
-use opengl_graphics::GlGraphics;
-use piston::input::*;
-use std::collections::LinkedList;
-#[derive(Clone, PartialEq)]
-pub enum Direction {
-    RIGHT,
-    LEFT,
-    UP,
-    DOWN,
-}
+use crate::constants::{SNAKE_BODY_CHAR, SNAKE_HEAD_CHAR};
+use crate::game::WindowSize;
+use ncurses::*;
 
 pub struct Snake {
-    pub body: LinkedList<(i32, i32)>,
-    pub dir: Direction,
+    pub body: Vec<(i32, i32)>,
+    window: WINDOW,
+}
+
+#[derive(Copy, Clone, PartialEq)]
+pub enum Direction {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
 }
 
 impl Snake {
-    pub fn redner(&self, gl: &mut GlGraphics, args: &RenderArgs) {
-        // let square =
-        //     graphics::rectangle::square((self.pos.x * 20) as f64, (self.pos.y * 20) as f64, 20_f64);
-
-        let squares: Vec<graphics::types::Rectangle> = self
-            .body
-            .iter()
-            .map(|&(x, y)| graphics::rectangle::square((x * 20) as f64, (y * 20) as f64, 20_f64))
-            .collect();
-
-        gl.draw(args.viewport(), |c, gl| {
-            let transform = c.transform;
-            squares.into_iter().for_each(|square| {
-                graphics::rectangle(SNAKE_BODY_COLOR, square, transform, gl);
-            })
-        });
+    pub fn new(window: WINDOW) -> Snake {
+        Snake {
+            body: vec![(4, 10), (4, 9), (4, 8)],
+            window: window,
+        }
     }
 
-    pub fn update(&mut self) {
-        let mut new_head = (*self.body.front().expect("Snake has no body")).clone();
+    pub fn render(&self) {
+        for (index, part) in self.body.iter().enumerate() {
+            wmove(self.window, part.0, part.1);
+            if index == 0 {
+                wattron(self.window, COLOR_PAIR(SNAKE_HEAD));
+                waddch(self.window, SNAKE_HEAD_CHAR as u32);
+                wattr_off(self.window, COLOR_PAIR(SNAKE_HEAD));
+            } else {
+                waddch(self.window, SNAKE_BODY_CHAR as u32);
+            }
+        }
+    }
 
-        match self.dir {
-            Direction::LEFT => new_head.0 -= 1,
-            Direction::RIGHT => new_head.0 += 1,
-            Direction::UP => new_head.1 -= 1,
-            Direction::DOWN => new_head.1 += 1,
+    pub fn move_head(
+        &mut self,
+        direction: Direction,
+        current_direction: Direction,
+        min: &WindowSize,
+        max: &WindowSize,
+    ) {
+        let mut x = self.body[0].1;
+        let mut y = self.body[0].0;
+
+        match direction {
+            Direction::UP => {
+                if y == min.y {
+                    return;
+                }
+
+                y -= 1
+            }
+            Direction::DOWN => {
+                if y == max.y {
+                    return;
+                }
+
+                y += 1
+            }
+            Direction::RIGHT => {
+                if x == max.x {
+                    return;
+                }
+
+                x += 1
+            }
+            Direction::LEFT => {
+                if x == min.x {
+                    return;
+                }
+
+                x -= 1
+            }
         }
 
-        self.body.push_front(new_head);
-        self.body.pop_back();
+        self.body.insert(0, (y, x));
+    }
+
+    /// get snake head coordinates (y, x)
+    pub fn get_head(&self) -> (i32, i32) {
+        return self.body[0];
     }
 }

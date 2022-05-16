@@ -1,58 +1,32 @@
-extern crate glutin_window;
-extern crate graphics;
-extern crate opengl_graphics;
-extern crate piston;
+extern crate ncurses;
 
 mod colors;
+mod constants;
+mod food;
 mod game;
+mod help;
 mod snake;
 
+use colors::*;
 use game::Game;
-use glutin_window::GlutinWindow;
-use opengl_graphics::{GlGraphics, OpenGL};
-use piston::event_loop::*;
-use piston::input::*;
-use piston::window::WindowSettings;
-use piston::Events;
-use snake::{Direction, Snake};
-
-use std::collections::LinkedList;
+use ncurses::*;
 
 fn main() {
-    let opengl = OpenGL::V3_2;
+    initscr();
+    noecho();
+    cbreak();
+    curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
+    start_color();
+    init_pair(SNAKE_HEAD, COLOR_BLACK, COLOR_WHITE);
 
-    let mut window: GlutinWindow = WindowSettings::new("Snake Game", [512; 2])
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
+    let mut y_max = 0;
+    let mut x_max = 0;
 
-    let mut game = Game {
-        gl: GlGraphics::new(opengl),
-        snake: Snake {
-            body: LinkedList::from_iter((vec![(0, 0), (0, 1)]).into_iter()),
-            dir: Direction::RIGHT,
-        },
-    };
+    getmaxyx(stdscr(), &mut y_max, &mut x_max);
 
-    let mut events = Events::new(EventSettings::new()).ups(16);
-    while let Some(e) = events.next(&mut window) {
-        if let Some(args) = e.render_args() {
-            game.render(&args);
-        }
+    let game_window = newwin(y_max / 2, x_max / 2, y_max / 4, x_max / 4);
 
-        if let Some(_) = e.update_args() {
-            game.update();
-        }
-
-        if let Some(key) = e.button_args() {
-            if key.state == ButtonState::Press {
-                // quit game if q key is pressed
-                if key.button == Button::Keyboard(Key::Q) {
-                    return;
-                }
-
-                game.pressed(&key.button);
-            }
-        }
-    }
+    let mut game = Game::init(game_window, x_max, y_max);
+    game.start();
+    endwin();
 }
