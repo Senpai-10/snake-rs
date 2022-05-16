@@ -1,3 +1,4 @@
+use crate::food::Food;
 use crate::help::display_help_box;
 use crate::snake::{Direction, Snake};
 use ncurses::*;
@@ -14,6 +15,7 @@ pub struct Game {
     quit: bool,
 }
 
+#[derive(Clone, Copy)]
 pub struct WindowSize {
     pub x: i32,
     pub y: i32,
@@ -36,19 +38,30 @@ impl Game {
 
     pub fn start(&mut self) {
         self.set_min_and_max();
+        let mut food = Food::init(self.window, self.min, self.max);
+        food.generate();
 
         // main loop
         while !self.quit {
-            std::thread::sleep_ms(100);
             display_help_box(self.screen_x_max, self.screen_y_max);
-            box_(self.window, 0, 0); // draw the game window border
-            self.snake
-                .move_head(self.direction, self.direction, &self.min, &self.max);
+            box_(self.window, 0, 0);
+            self.display_score();
 
-            self.handle_input();
+            if self.snake.get_head() == food.coordinates {
+                self.score += 1;
+                wmove(self.window, food.coordinates.0, food.coordinates.1);
+                waddch(self.window, '#' as u32);
+
+                food.generate();
+            } else {
+                let last_part = self.snake.body.pop().unwrap();
+                wmove(self.window, last_part.0, last_part.1);
+                waddch(self.window, ' ' as u32);
+            }
+
             self.snake.render();
 
-            self.display_score();
+            self.handle_input();
             refresh();
         }
     }

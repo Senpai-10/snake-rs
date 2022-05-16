@@ -78,6 +78,11 @@ impl Snake {
             }
         }
 
-        self.body = insert_new_head(&mut self.body, (y, x));
+        self.body.insert(0, (y, x));
+    }
+
+    /// get snake head coordinates (y, x)
+    pub fn get_head(&self) -> (i32, i32) {
+        return self.body[0];
     }
 }

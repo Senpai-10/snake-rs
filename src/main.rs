@@ -1,6 +1,7 @@
 extern crate ncurses;
 
 mod colors;
+mod food;
 mod game;
 mod help;
 mod insert_new_head;
@@ -24,7 +25,6 @@ fn main() {
     getmaxyx(stdscr(), &mut y_max, &mut x_max);
 
     let game_window = newwin(y_max / 2, x_max / 2, y_max / 4, x_max / 4);
-    nodelay(game_window, true);
 
     let mut game = Game::init(game_window, x_max, y_max);
     game.start();
