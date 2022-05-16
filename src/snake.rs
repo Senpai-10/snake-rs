@@ -1,6 +1,5 @@
 use crate::colors::*;
 use crate::game::WindowSize;
-use crate::insert_new_head::insert_new_head;
 use ncurses::*;
 
 pub struct Snake {
