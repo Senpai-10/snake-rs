@@ -28,13 +28,11 @@ impl Snake {
         for (index, part) in self.body.iter().enumerate() {
             wmove(self.window, part.0, part.1);
             if index == 0 {
-                wattron(self.window, COLOR_PAIR(SNAKE_HEAD));
-                waddch(self.window, '*' as u32);
-                wattr_off(self.window, COLOR_PAIR(SNAKE_HEAD));
-            } else {
                 wattron(self.window, COLOR_PAIR(SNAKE_BODY));
                 waddch(self.window, '#' as u32);
                 wattr_off(self.window, COLOR_PAIR(SNAKE_BODY));
+            } else {
+                waddch(self.window, '#' as u32);
             }
         }
     }
