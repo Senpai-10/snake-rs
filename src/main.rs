@@ -16,8 +16,7 @@ fn main() {
     cbreak();
     curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
     start_color();
-    init_pair(SNAKE_HEAD, COLOR_RED, COLOR_WHITE);
-    init_pair(SNAKE_BODY, COLOR_BLACK, COLOR_WHITE);
+    init_pair(SNAKE_HEAD, COLOR_BLACK, COLOR_WHITE);
 
     let mut y_max = 0;
     let mut x_max = 0;
